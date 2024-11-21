@@ -220,7 +220,7 @@ class _EmployeeLeavesFilterState extends State<EmployeeLeavesFilter> {
                       child: GestureDetector(
                         onTap: () {
                           employeeLeavesProvider.setSelectedLeaveStatus(
-                              Constants.statusRejected, context);
+                              Constants.statusRequestToCancel, context);
                         },
                         child: Container(
                           alignment: Alignment.center,
@@ -233,11 +233,11 @@ class _EmployeeLeavesFilterState extends State<EmployeeLeavesFilter> {
                               ),
                               color:
                                   employeeLeavesProvider.selectedLeavestatus !=
-                                          Constants.statusRejected
+                                          Constants.statusRequestToCancel
                                       ? const Color(BasicColors.primary)
                                       : Colors.transparent),
                           child: const Text(
-                            'Rejected',
+                            'RTC',
                             style: TextStyle(
                               color: Color(BasicColors.tertiary),
                               /* color: employeeLeavesProvider.selectedLeavestatus !=

@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:org_connect_pt/common/common_dialogs/disable_user_interface_dialog.dart';
+import 'package:org_connect_pt/common/common_dialogs/apply_leave_confirmation_dialog.dart';
 import 'package:org_connect_pt/common/common_providers/leave_balance_provider.dart';
-import 'package:org_connect_pt/common/error_snackbar.dart';
-import 'package:org_connect_pt/common/toasts.dart';
-import 'package:org_connect_pt/helpers/api_validation_helper.dart';
-import 'package:org_connect_pt/helpers/shared_preference_helper.dart';
-import 'package:org_connect_pt/models/api_response.dart';
+import 'package:org_connect_pt/models/leave.dart';
 import 'package:org_connect_pt/screens/apply_for_leave/apply_for_leave_screen_interface.dart';
 import 'package:org_connect_pt/screens/apply_for_leave/apply_for_leave_screen_providers/apply_for_leave_data_provider.dart';
 import 'package:org_connect_pt/screens/apply_for_leave/apply_for_leave_screen_providers/backup_employees_provider.dart';
 import 'package:org_connect_pt/screens/apply_for_leave/apply_for_leave_screen_providers/holidays_provider.dart';
-import 'package:org_connect_pt/screens/login_screen/login_screen.dart';
-import 'package:org_connect_pt/services/leave_services.dart';
 import 'package:org_connect_pt/utils/basic_colors.dart';
-import 'package:org_connect_pt/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 class ApplyForLeaveScreenContent extends StatefulWidget {
@@ -85,68 +78,28 @@ class _ApplyForLeaveScreenContentState
 
     showDialog(
       context: context,
-      builder: (ctx) => const DisableUserInteractionDialog(),
+      builder: (ctx) => ApplyLeaveConfirmationDialog(
+          leave: Leave(
+              leaveId: 0,
+              employeeId: 82,
+              employeeName: '',
+              startDate: DateFormat('yyyy-MM-dd')
+                  .format(applyForLeaveDataProvider.selectedFromDate!),
+              endDate: DateFormat('yyyy-MM-dd')
+                  .format(applyForLeaveDataProvider.selectedToDate!),
+              startSegment: applyForLeaveDataProvider.selectedFromSegment,
+              endSegment: applyForLeaveDataProvider.selectedToSegment,
+              statusId: 10,
+              statusDescription: '',
+              reason: applyForLeaveDataProvider.reason,
+              backupEmployeeId:
+                  applyForLeaveDataProvider.selectedActingArrangement != null
+                      ? applyForLeaveDataProvider.selectedActingArrangement!.id
+                      : 0,
+              backupEmployeeName: '',
+              contactNumber: applyForLeaveDataProvider.enteredContactNumber,
+              leaveTypeId: applyForLeaveDataProvider.selectedLeaveType!.id,
+              dayCount: applyForLeaveDataProvider.calculatedLeaveCount)),
     );
-
-    String authToken = await SharedPreferenceHelper.getAuthToken();
-
-    await LeaveServices.applyForLeave(
-            authToken,
-            82,
-            DateFormat('yyyy-MM-dd')
-                .format(applyForLeaveDataProvider.selectedFromDate!),
-            DateFormat('yyyy-MM-dd')
-                .format(applyForLeaveDataProvider.selectedToDate!),
-            applyForLeaveDataProvider.reason,
-            applyForLeaveDataProvider.selectedFromSegment,
-            applyForLeaveDataProvider.selectedFromSegment,
-            applyForLeaveDataProvider.selectedActingArrangement != null
-                ? applyForLeaveDataProvider.selectedActingArrangement!.id
-                : 0,
-            applyForLeaveDataProvider.enteredContactNumber,
-            applyForLeaveDataProvider.selectedLeaveType!.id,
-            applyForLeaveDataProvider.calculatedLeaveCount)
-        .then((result) {
-      try {
-        if (result != null) {
-          if (result is String) {
-            _onFailed(result);
-          } else if (result is int) {
-            _sessionExpired();
-          } else {
-            _onSuccess(result);
-          }
-        } else {
-          _onFailed(getErrorMessage(Constants.nullException));
-        }
-      } catch (e) {
-        _onFailed(getErrorMessage(Constants.unknownException));
-      }
-    }, onError: (errorCode) {
-      _onFailed(getErrorMessage(errorCode));
-    });
-  }
-
-  _onFailed(String message) {
-    Navigator.pop(context);
-    ErrorSnackBar.showErrorSnackBar(context, message);
-  }
-
-  _sessionExpired() {
-    Toasts.showErrorToast('Session Expired');
-    Navigator.pop(context);
-    Navigator.pop(context);
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const LoginScreen(),
-      ),
-    );
-  }
-
-  _onSuccess(APIResponse response) {
-    Toasts.showSuccessToast(response.message ?? 'Success');
-    Navigator.pop(context);
-    Navigator.pop(context);
   }
 }

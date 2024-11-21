@@ -45,8 +45,8 @@ class Constants {
   static const int defaultAPITimeout = 30;
 
   //Leave Segment Codes
-  static const String segmentMorning = "1";
-  static const String segmentEvening = "2";
+  static const String segmentMorning = "First Half";
+  static const String segmentEvening = "Second Half";
 
   //statuses
   static const int statusPending = 10;

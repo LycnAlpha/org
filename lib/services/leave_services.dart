@@ -195,10 +195,10 @@ class LeaveServices {
       'leaveReason': reason,
       'leaveStartSegment': startShiftId.toString(),
       'leaveEndSegment': endShiftId.toString(),
-      'backupEmployeeId': backupEmployeeId.toString(),
+      'backupEmployeeId': backupEmployeeId,
       'contactNumber': contactNumber,
-      'leaveTypeId': leaveTypeId.toString(),
-      'count': count.toString(),
+      'leaveTypeId': leaveTypeId,
+      'count': count,
     };
 
     var url = Uri.http(Urls.baseUrl, Urls.applyLeaveUrl);
@@ -235,6 +235,48 @@ class LeaveServices {
     String queryParameters = leaveId.toString();
 
     final body = {"statusId": status};
+
+    var url =
+        Uri.http(Urls.baseUrl, Urls.approveLeaveRequestUrl + queryParameters);
+
+    try {
+      final response = await http
+          .patch(
+            url,
+            headers: <String, String>{
+              Constants.headerContentType: Constants.contentTypeValue,
+              /* Constants.headerAuthorization:
+              Constants.authorizationBearerValue + authToken,*/
+            },
+            body: json.encode(body),
+          )
+          .timeout(const Duration(seconds: Constants.defaultAPITimeout));
+
+      if (response.statusCode == 401) {
+        return 401;
+      }
+
+      return validateAPIResponse(response);
+    } on SocketException {
+      throw Constants.socketException;
+    } on TimeoutException {
+      throw Constants.timeoutException;
+    } catch (e) {
+      throw Constants.generalException;
+    }
+  }
+
+  static Future<dynamic> rejectLeaveRequest(
+      String authToken, int leaveId, int status, String reason) async {
+    String queryParameters = leaveId.toString();
+
+    Map<String, Object> body;
+
+    if (reason.isNotEmpty) {
+      body = {"statusId": status, "rejectleavereason": reason};
+    } else {
+      body = {"statusId": status};
+    }
 
     var url =
         Uri.http(Urls.baseUrl, Urls.approveLeaveRequestUrl + queryParameters);

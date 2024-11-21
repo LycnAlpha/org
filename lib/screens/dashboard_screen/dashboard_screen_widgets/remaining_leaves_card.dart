@@ -125,7 +125,7 @@ class RemainingLeavesCard extends StatelessWidget {
                                           ? '${leaveBalanceProvider.getTotalEntitledLeaveCount().toInt()}'
                                           : '${leaveBalanceProvider.getTotalEntitledLeaveCount()}',
                                       style: const TextStyle(
-                                          fontSize: 30.0,
+                                          fontSize: 25.0,
                                           color: Color(BasicColors.primary),
                                           fontWeight: FontWeight.w800),
                                     ),
@@ -166,7 +166,7 @@ class RemainingLeavesCard extends StatelessWidget {
                                           ? '${leaveBalanceProvider.getTotalLeaveBalance().toInt()}'
                                           : '${leaveBalanceProvider.getTotalLeaveBalance()}',
                                       style: const TextStyle(
-                                          fontSize: 30.0,
+                                          fontSize: 25.0,
                                           color: Color(BasicColors.secondary),
                                           fontWeight: FontWeight.w800),
                                     ),

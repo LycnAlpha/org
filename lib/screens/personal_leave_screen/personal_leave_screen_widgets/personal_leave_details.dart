@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:org_connect_pt/common/common_dialogs/approve_leave_confirmation_dialog.dart';
-import 'package:org_connect_pt/common/common_dialogs/reject_leave_confirmation_dialog.dart';
+import 'package:org_connect_pt/common/common_dialogs/cancel_leave_confirmation_dialog.dart';
+import 'package:org_connect_pt/common/common_dialogs/rtc_leave_confirmation_dialog.dart';
 import 'package:org_connect_pt/helpers/status_handle_helper.dart';
 import 'package:org_connect_pt/models/leave.dart';
 import 'package:org_connect_pt/utils/basic_colors.dart';
 import 'package:org_connect_pt/utils/constants.dart';
 
-class EmployeeLeaveDetails extends StatelessWidget {
+class PersonalLeaveDetails extends StatelessWidget {
   final Leave leave;
-  const EmployeeLeaveDetails({
+  const PersonalLeaveDetails({
     super.key,
     required this.leave,
   });
@@ -211,47 +211,43 @@ class EmployeeLeaveDetails extends StatelessWidget {
 
   Widget actionButtonArea(BuildContext context) {
     return Visibility(
-        visible: leave.statusId == Constants.statusPending,
+        visible: leave.statusId == Constants.statusPending ||
+            leave.statusId == Constants.statusApproved,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-              child: actionButton(
-                label: 'Reject',
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (ctx) => RejectLeaveConfirmationDialog(
-                      leave: leave,
+              child: leave.statusId == Constants.statusPending
+                  ? actionButton(
+                      label: 'Cancel Leave Request',
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => CancelLeaveConfirmationDialog(
+                            leave: leave,
+                          ),
+                        ).then((value) {
+                          Navigator.pop(context);
+                        });
+                      },
+                      color: const Color(BasicColors.secondary),
+                    )
+                  : actionButton(
+                      label: 'Request to cancel',
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => RtcLeaveConfirmationDialog(
+                            leave: leave,
+                          ),
+                        ).then((value) {
+                          Navigator.pop(context);
+                        });
+                      },
+                      color: const Color(BasicColors.secondary),
                     ),
-                  ).then((value) {
-                    Navigator.pop(context);
-                  });
-                },
-                color: const Color(BasicColors.primary),
-              ),
             ),
-            const SizedBox(
-              width: 20.0,
-            ),
-            Expanded(
-              child: actionButton(
-                label: 'Approve',
-                onPressed: () {
-                  //implement approval flow
-                  showDialog(
-                    context: context,
-                    builder: (ctx) => ApproveLeaveConfirmationDialog(
-                      leave: leave,
-                    ),
-                  ).then((value) {
-                    Navigator.pop(context);
-                  });
-                },
-                color: const Color(BasicColors.secondary),
-              ),
-            )
           ],
         ));
   }

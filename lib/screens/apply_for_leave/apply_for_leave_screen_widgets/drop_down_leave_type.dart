@@ -100,7 +100,8 @@ class _DropDownLeaveTypeState extends State<DropDownLeaveType> {
                           style: customTextStyle(),
                         ),
                         Text(
-                          leaveType.balanceCount % 1 == 0
+                          (leaveType.balanceCount - leaveType.holdCount) % 1 ==
+                                  0
                               ? (leaveType.balanceCount - leaveType.holdCount) <
                                       10
                                   ? '(0${(leaveType.balanceCount - leaveType.holdCount).toInt()})'

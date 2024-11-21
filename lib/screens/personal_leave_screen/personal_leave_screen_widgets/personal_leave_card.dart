@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:org_connect_pt/common/common_dialogs/cancel_leave_confirmation_dialog.dart';
 import 'package:org_connect_pt/common/common_dialogs/rtc_leave_confirmation_dialog.dart';
+import 'package:org_connect_pt/common/common_providers/leave_balance_provider.dart';
 import 'package:org_connect_pt/helpers/status_handle_helper.dart';
 import 'package:org_connect_pt/models/leave.dart';
 import 'package:org_connect_pt/screens/personal_leave_screen/personal_leave_provider.dart';
+import 'package:org_connect_pt/screens/personal_leave_screen/personal_leave_screen_widgets/personal_leave_details.dart';
 import 'package:org_connect_pt/utils/basic_colors.dart';
 import 'package:org_connect_pt/utils/constants.dart';
 import 'package:provider/provider.dart';
@@ -36,6 +38,10 @@ class PersonalLeaveCard extends StatelessWidget {
                           context,
                           listen: false,
                         ).getPersonalLeaves(context);
+                        Provider.of<LeaveBalanceProvider>(
+                          context,
+                          listen: false,
+                        ).getLeaveBalances(context);
                       })
                     : showDialog(
                         context: context,
@@ -47,6 +53,11 @@ class PersonalLeaveCard extends StatelessWidget {
                           context,
                           listen: false,
                         ).getPersonalLeaves(context);
+
+                        Provider.of<LeaveBalanceProvider>(
+                          context,
+                          listen: false,
+                        ).getLeaveBalances(context);
                       });
               },
               child: content(context),
@@ -92,111 +103,133 @@ class PersonalLeaveCard extends StatelessWidget {
   }
 
   Widget content(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.0),
-        color: const Color(BasicColors.tertiary),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 1,
-            blurRadius: 3.0,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Stack(
-        alignment: AlignmentDirectional.topEnd,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(2.0),
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Color(BasicColors.primary),
-                ),
-                child: Center(
-                  child: CircleAvatar(
-                    radius: 40.0,
-                    backgroundColor: const Color(BasicColors.tertiary),
-                    child: Text(
-                      leave.leavetypeName != null
-                          ? leave.leavetypeName!.substring(0, 1)
-                          : 'L',
-                      style: const TextStyle(
-                          color: Color(BasicColors.secondary), fontSize: 50.0),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => PersonalLeaveDetails(
+                    leave: leave,
+                  )),
+        ).then((value) {
+          Provider.of<PersonalLeaveProvider>(
+            context,
+            listen: false,
+          ).getPersonalLeaves(context);
+
+          Provider.of<LeaveBalanceProvider>(
+            context,
+            listen: false,
+          ).getLeaveBalances(context);
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          color: const Color(BasicColors.tertiary),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 1,
+              blurRadius: 3.0,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Stack(
+          alignment: AlignmentDirectional.topEnd,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(2.0),
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(BasicColors.primary),
+                  ),
+                  child: Center(
+                    child: CircleAvatar(
+                      radius: 40.0,
+                      backgroundColor: const Color(BasicColors.tertiary),
+                      child: Text(
+                        leave.leavetypeName != null
+                            ? leave.leavetypeName!.substring(0, 1)
+                            : 'L',
+                        style: const TextStyle(
+                            color: Color(BasicColors.secondary),
+                            fontSize: 50.0),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(
-                width: 10.0,
-              ),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      leave.leavetypeName ?? 'Leave',
-                      style: const TextStyle(
-                          color: Color(BasicColors.primary),
-                          fontWeight: FontWeight.w500,
-                          fontSize: 18),
-                    ),
-                    Text(
-                      'From: ${leave.startDate} (${leave.startShiftName})',
-                      style: const TextStyle(
-                          color: Color(BasicColors.primary),
-                          // fontWeight: FontWeight.w500,
-                          fontSize: 14),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      'To: ${leave.endDate} (${leave.endShiftName})',
-                      style: const TextStyle(
-                          color: Color(BasicColors.primary),
-                          // fontWeight: FontWeight.w500,
-                          fontSize: 14),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      'Reason: ${leave.reason}',
-                      style: const TextStyle(
-                          color: Color(BasicColors.primary),
-                          // fontWeight: FontWeight.w500,
-                          fontSize: 14),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    )
-                  ],
+                const SizedBox(
+                  width: 10.0,
                 ),
-              ),
-            ],
-          ),
-          Container(
-            padding:
-                const EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20.0),
-                color:
-                    Color(StatusHandleHelper.getStatusColor(leave.statusId))),
-            child: Text(
-              leave.statusDescription,
-              style: const TextStyle(
-                  color: Color(BasicColors.tertiary),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12.0),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        leave.leavetypeName ?? 'Leave',
+                        style: const TextStyle(
+                            color: Color(BasicColors.primary),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18),
+                      ),
+                      Text(
+                        'From: ${leave.startDate} (${leave.startSegment})',
+                        style: const TextStyle(
+                            color: Color(BasicColors.primary),
+                            // fontWeight: FontWeight.w500,
+                            fontSize: 14),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        'To: ${leave.endDate} (${leave.endSegment})',
+                        style: const TextStyle(
+                            color: Color(BasicColors.primary),
+                            // fontWeight: FontWeight.w500,
+                            fontSize: 14),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        'Reason: ${leave.reason}',
+                        style: const TextStyle(
+                            color: Color(BasicColors.primary),
+                            // fontWeight: FontWeight.w500,
+                            fontSize: 14),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    ],
+                  ),
+                ),
+              ],
             ),
-          )
-        ],
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.0),
+                  color:
+                      Color(StatusHandleHelper.getStatusColor(leave.statusId))),
+              child: Text(
+                leave.statusDescription,
+                style: const TextStyle(
+                    color: Color(BasicColors.tertiary),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12.0),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

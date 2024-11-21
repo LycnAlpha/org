@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:org_connect_pt/screens/personal_leave_screen/personal_leave_screen_widgets/personal_leave_card.dart';
 import 'package:org_connect_pt/screens/personal_leave_screen/personal_leave_provider.dart';
+import 'package:org_connect_pt/screens/personal_leave_screen/personal_leave_screen_widgets/personal_leave_filter.dart';
 import 'package:org_connect_pt/utils/basic_colors.dart';
 import 'package:provider/provider.dart';
 
@@ -57,6 +58,7 @@ class _PersonalLeaveListState extends State<PersonalLeaveList> {
                     fontSize: 16.0),
               ),
             ),
+            const PersonalLeaveFilter(),
             Expanded(child: Consumer<PersonalLeaveProvider>(
                 builder: (context, personalLeaveProvider, child) {
               if (personalLeaveProvider.isLoading) {
@@ -88,6 +90,18 @@ class _PersonalLeaveListState extends State<PersonalLeaveList> {
                         ))
                   ],
                 );
+              } else if (personalLeaveProvider.filteredList.isEmpty &&
+                  personalLeaveProvider.isFiltered) {
+                return const Center(
+                  child: Text(
+                    'No Results available',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.red,
+                        fontWeight: FontWeight.w400),
+                  ),
+                );
               } else {
                 return RefreshIndicator(
                   onRefresh: widget.retry,
@@ -95,11 +109,11 @@ class _PersonalLeaveListState extends State<PersonalLeaveList> {
                       controller: _scrollController,
                       padding: const EdgeInsets.all(5.0),
                       itemCount: personalLeaveProvider.hasMorePages
-                          ? personalLeaveProvider.personalLeaves.length + 1
-                          : personalLeaveProvider.personalLeaves.length,
+                          ? personalLeaveProvider.filteredList.length + 1
+                          : personalLeaveProvider.filteredList.length,
                       itemBuilder: (context, index) {
                         if (index ==
-                            personalLeaveProvider.personalLeaves.length) {
+                            personalLeaveProvider.filteredList.length) {
                           if (personalLeaveProvider.errorOccured) {
                             return Text(
                               'List loading error: ${personalLeaveProvider.message}',
@@ -124,7 +138,7 @@ class _PersonalLeaveListState extends State<PersonalLeaveList> {
                           }
                         } else {
                           return PersonalLeaveCard(
-                            leave: personalLeaveProvider.personalLeaves[index],
+                            leave: personalLeaveProvider.filteredList[index],
                           );
                         }
                       }),

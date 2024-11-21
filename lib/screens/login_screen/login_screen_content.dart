@@ -191,7 +191,7 @@ class _LoginScreenContentState extends State<LoginScreenContent> {
   }
 
   _loginFailed(String message) {
-    Navigator.pop(context);
+    // Navigator.pop(context);
     ErrorSnackBar.showErrorSnackBar(context, message);
   }
 

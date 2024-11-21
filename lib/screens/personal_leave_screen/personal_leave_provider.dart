@@ -18,7 +18,10 @@ class PersonalLeaveProvider extends ChangeNotifier {
   bool hasMorePages = false;
   Pagination? paginationDetails;
 
+  int selectedLeavestatus = Constants.statusApproved;
+  bool isFiltered = false;
   List<Leave> personalLeaves = [];
+  List<Leave> filteredList = [];
 
   void getPersonalLeaves(BuildContext context) {
     isLoading = true;
@@ -26,6 +29,7 @@ class PersonalLeaveProvider extends ChangeNotifier {
     isEmptyList = false;
     personalLeaves = [];
     hasMorePages = false;
+    isFiltered = false;
     notifyListeners();
 
     _apiCall(context, 1);
@@ -35,6 +39,37 @@ class PersonalLeaveProvider extends ChangeNotifier {
     if (hasMorePages) {
       _apiCall(context, paginationDetails!.currentPage + 1);
     }
+  }
+
+  void setSelectedLeaveStatus(int status, BuildContext context) {
+    selectedLeavestatus = status;
+    filter(context);
+  }
+
+  void filter(BuildContext context) {
+    filteredList = personalLeaves;
+
+    filterBystatus(context);
+    if (filteredList.length < 10 && hasMorePages) {
+      getMoreLeaves(context);
+    }
+  }
+
+  void filterBystatus(BuildContext context) {
+    List<Leave> temp = [];
+
+    if (selectedLeavestatus != 0) {
+      for (Leave leave in filteredList) {
+        if (leave.statusId == selectedLeavestatus) {
+          temp.add(leave);
+        }
+      }
+
+      filteredList = temp;
+      isFiltered = true;
+    }
+
+    notifyListeners();
   }
 
   Future<void> _apiCall(BuildContext context, int page) async {
@@ -49,7 +84,7 @@ class PersonalLeaveProvider extends ChangeNotifier {
             _sessionExpired(context);
           } else {
             //success
-            _onSuccess(result);
+            _onSuccess(result, context);
           }
         } else {
           _onFailed(getErrorMessage(Constants.nullException));
@@ -62,7 +97,7 @@ class PersonalLeaveProvider extends ChangeNotifier {
     });
   }
 
-  _onSuccess(APIResponse result) {
+  _onSuccess(APIResponse result, BuildContext context) {
     try {
       List<Leave> personalLeaveList = result.data['result'][0]
           .map((leave) => Leave.fromJson(leave))
@@ -80,7 +115,7 @@ class PersonalLeaveProvider extends ChangeNotifier {
         } else {
           hasMorePages = false;
         }
-        notifyListeners();
+        filter(context);
       } else {
         isEmptyList = true;
         _onFailed('No records available');

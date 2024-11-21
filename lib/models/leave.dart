@@ -66,8 +66,8 @@ class Leave {
       leaveTypeId: json['leaveTypeId'],
       leavetypeName: json['leaveTypeName'],
       dayCount: json['count'],
-      startSegment: json['leaveStartSegment'] == '1' ? 'Morning' : 'Evening',
-      endSegment: json['leaveEndSegment'] == '1' ? 'Morning' : 'Evening',
+      startSegment: json['leaveStartSegment'],
+      endSegment: json['leaveEndSegment'],
     );
   }
 

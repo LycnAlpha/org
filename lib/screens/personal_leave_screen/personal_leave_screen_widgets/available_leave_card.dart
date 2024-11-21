@@ -28,7 +28,7 @@ class AvailableLeaveCard extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 5.0),
                 child: Text(
                   leaveBalance.leavetypeName,
                   style: const TextStyle(
@@ -54,15 +54,18 @@ class AvailableLeaveCard extends StatelessWidget {
                     color: Color(BasicColors.primary),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(10.0),
+                    padding: const EdgeInsets.all(5.0),
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
                           child: Text(
-                            leaveBalance.balanceCount % 1 == 0
+                            (leaveBalance.balanceCount -
+                                            leaveBalance.holdCount) %
+                                        1 ==
+                                    0
                                 ? (leaveBalance.balanceCount -
                                             leaveBalance.holdCount) <
                                         10
@@ -76,7 +79,7 @@ class AvailableLeaveCard extends StatelessWidget {
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 25.0),
+                                fontSize: 22.0),
                             textAlign: TextAlign.right,
                           ),
                         ),

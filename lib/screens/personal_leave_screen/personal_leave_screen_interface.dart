@@ -42,7 +42,9 @@ class PersonalLeaveScreenInterface extends StatelessWidget {
             context,
             MaterialPageRoute(
                 builder: (context) => const ApplyForLeaveScreen()),
-          );
+          ).then((value) {
+            retry();
+          });
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
